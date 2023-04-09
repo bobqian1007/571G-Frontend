@@ -33,34 +33,35 @@ const CampaignList = ({campaignList,loading,dispatch}) => {
         })
     }
     const getCampaignDetail = async values => {
-        setShowDetail(true)
+        console.log(values)
         await dispatch({
-            type: 'campaignList/queryCampaignDetail',
+            type: 'campaignDetail/queryCampaignDetail',
             payload: values
         })
+        setShowDetail(true)
     }
     return (
         <PageContainer title='List of Campaigns' breadcrumb={null} >
-            <FormForModal title="Create New Campaign" left={12} right={12} width={500} record={{minContribution:3}} onFinish={onCreateNewCampaign} fields={formField}
-                          onCancel={() => setShowForm(false)} open={showForm}
+            <FormForModal title="Create New Campaign" left={12} right={12} width={500} onFinish={onCreateNewCampaign} fields={formField}
+                          onCancel={() => setShowForm(false)} open={showForm} loading={loading.effects['compaignList/createNewCampaign']}
             />
-            <Modal title="Campaign Detail" open={showDetail} onCancel={() => setShowDetail(false)} footer={[]}>
+            <Modal width={800} title="Campaign Detail" open={showDetail} onCancel={() => setShowDetail(false)} footer={[]}>
                 <CampaignDetail />
             </Modal>
-            <Card loading={loading.effects['compaignList/createTestCase']}>
+            <Card loading={loading.effects['compaignList/queryCampaignList']}>
                 <Row>
                     <Col span={18} />
                     <Col span={6}>
                         <Button type="primary" color={"black"} onClick={() => setShowForm(true)}><PlusOutlined/>Add New Campaign</Button>
                     </Col>
                 </Row>
-                <Row style={{marginTop: 12}}>
+                <Row style={{marginTop: 12}} gutter={[12,12]}>
                     {
                         campaigns.map((item) => (
                             <Col span={8}>
                                 <Card title={"Campaign Info"} hoverable>
-                                    <Meta title="Address" description={item.address}/>
-                                    <Meta title="Description" description={<Button type="primary" onClick={()=>getCampaignDetail(item.address)}>view Detail</Button>}/>
+                                    <Meta title="Address" description={item}/>
+                                    <Meta title="Description" description={<Button type="primary" onClick={()=>getCampaignDetail(item)}>view Detail</Button>}/>
                                 </Card>
                             </Col>
                         ))

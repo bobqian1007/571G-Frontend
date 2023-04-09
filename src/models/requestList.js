@@ -62,10 +62,11 @@ export default {
         },
         *queryRequestList({payload}, {call, put,select}) {
             const requestList = yield select(state => state.requestList);
+            console.log(requestList)
             if (!requestList.campaignAddress || !requestList.requestCount){
                 return
             }
-            const res = yield call(getAllRequests, {requestCount:requestList.requestCount,address:requestList.address})
+            const res = yield call(getAllRequests, {requestCount:requestList.requestCount,address:requestList.campaignAddress})
             if (checkIfResValid(res)){
                 yield put(
                     {
@@ -77,7 +78,7 @@ export default {
                 )
             }
         },
-        *createNewRequest(payload,{call,put,select}){
+        *createNewRequest({payload},{call,put,select}){
             const requestList = yield select(state => state.requestList);
             const res = yield call(createRequest,payload)
             if (checkIfResValid(res)){
@@ -85,6 +86,12 @@ export default {
                     message:"create request successfully"
                 })
                 if (payload.address === requestList.campaignAddress){
+                    yield put(
+                        {
+                            type:'queryRequestCount',
+                            payload:{}
+                        }
+                    )
                     yield put(
                         {
                             type:'queryRequestList',

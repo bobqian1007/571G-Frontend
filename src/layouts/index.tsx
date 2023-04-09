@@ -11,6 +11,7 @@ export default function Layout() {
             title={'FundChain'}
             logo={"https://github.com/bobqian1007/pictureBed/raw/main/571GProject/logo.png"}
             menuItemRender={(menuItemProps, defaultDom) => {
+                console.log(menuItemProps)
                 if (menuItemProps.isUrl || menuItemProps.children) {
                     return defaultDom;
                 }

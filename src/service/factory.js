@@ -1,10 +1,10 @@
 import web3 from "../util/web3";
-import CampaignFactory from "../util/CampaignFactory.json";
+import CampaignFactory from "../util/CampaignFactory1.json";
 import {errorHandler} from "./util";
 
 const instance = new web3.eth.Contract(
     CampaignFactory.abi,
-    "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    "0x9cc7f3fD2DB7aC7278b3339c1aFeDDc4F9F0599b"
 );
 console.log(instance.methods)
 export async function listCompaigns(){

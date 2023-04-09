@@ -5,12 +5,13 @@ import {PlusOutlined} from "@ant-design/icons";
 const {Item: FormItem} = Form;
 const { Meta } = Card;
 import { Link } from 'umi';
+import web3 from "../../util/web3";
 const CampaignDetail = ({campaignDetail,loading,dispatch}) => {
     const {address,minimumContribution,balance,requestsCount,approversCount,manager} = campaignDetail
     const [form] = Form.useForm();
     const layout = {
-        labelCol: {span: 6},
-        wrapperCol: {span: 18},
+        labelCol: {span: 10},
+        wrapperCol: {span: 14},
     }
     const linkToRequests =
         <Link to={"/requests/"+address}>View Requests</Link>
@@ -41,7 +42,7 @@ const CampaignDetail = ({campaignDetail,loading,dispatch}) => {
                 "Number of people who have already donated to this campaign",
         },
         {
-            value: web3.utils.fromWei(balance, "ether"),
+            value: web3.utils.fromWei(balance.toString(), "ether"),
             meta: "Campaign Balance (ether)",
             description:
                 "The balance is how much money this campaign has left to spend.",
@@ -49,9 +50,10 @@ const CampaignDetail = ({campaignDetail,loading,dispatch}) => {
     ];
     const onFinish = () => {
         form.validateFields().then((values) => {
+            console.log(values)
             dispatch({
-                type: 'compaignList/createTestCase',
-                payload: values
+                type: 'campaignDetail/contributeCampaign',
+                payload: {...values,address}
             })
         })
     }
@@ -60,22 +62,21 @@ const CampaignDetail = ({campaignDetail,loading,dispatch}) => {
             <Row>
                 <Form form={form}
                       {...layout}
-                      initialValues={record}
                       onFinish={onFinish}>
-                    <Col span={16}>
-                        <FormItem label="Contribute Amount" colon={true} initialValue={parseInt(minimumContribution)}
+                    <Col span={24}>
+                        <FormItem label="Contribute Amount" colon={true}
                                   rules={
                                       [{required: true}]
                                   } name={"amount"} valuePropName={'value'}
-                        ><InputNumber min={parseInt(minimumContribution)} defaultValue={parseInt(minimumContribution)} /></FormItem>
+                        ><InputNumber style={{width:300}} min={0} defaultValue={0} /></FormItem>
                     </Col>
                     <Col span={8}>
-                        <Button type="primary" color={"black"} onClick={() => onFinish()}><PlusOutlined/>Add New Campaign</Button>
+                        <Button loading={loading.effects['campaignDetail/contributeCampaign']} type="primary" color={"black"} onClick={() => onFinish()}>Contribute</Button>
                     </Col>
                 </Form>
             </Row>
             <Divider />
-            <Row gutter={16}>
+            <Row gutter={[16,16]}>
                 {
                     items.map((item) => (
                         <Col span={8}>

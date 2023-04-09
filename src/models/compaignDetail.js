@@ -24,13 +24,14 @@ export default {
     },
     effects: {
         *queryCampaignDetail({payload}, {call, put}) {
-            const res = yield call(getCompaignDetail,payload.address)
+            console.log(payload)
+            const res = yield call(getCompaignDetail,payload)
             if (checkIfResValid(res)){
                 yield put(
                     {
                         type:'save',
                         payload:{
-                            address: payload.address,
+                            address: payload,
                             minimumContribution: res[0],
                             balance: res[1],
                             requestsCount: res[2],
@@ -47,6 +48,14 @@ export default {
                 notification.success({
                     message:"contribute successfully"
                 })
+                yield put(
+                    {
+                        type:'queryCampaignDetail',
+                        payload:{
+                            address: payload,
+                        }
+                    }
+                )
             }
         }
     }

@@ -32,7 +32,7 @@ const SearchForm = ({requestList,loading,dispatch}) => {
                     ><Input allowClear style={{width:500}} defaultValue={campaignAddress}/></FormItem>
                 </Col>
                 <Col span={4}>
-                    <Button type="primary" color={"black"} onClick={() => changeSearchedAddress()}><PlusOutlined/>Search</Button>
+                    <Button type="primary" color={"black"} onClick={() => changeSearchedAddress()} loading={loading.effects['requestList/queryRequestList']}>Search</Button>
                 </Col>
             </Form>
         </Row>

@@ -1,5 +1,5 @@
 import web3 from "../util/web3";
-import Campaign from "../util/Campaign.json";
+import Campaign from "../util/Campaign1.json";
 import {errorHandler} from "./util"
 
 const campaign = (address) => {
@@ -11,6 +11,7 @@ export async function getCompaignDetail(address){
         const campaignObject = campaign(address);
         res = await campaignObject.methods.getSummary().call();
     }catch (error){
+        console.log(error)
         res = errorHandler(error)
     }
     return res
@@ -21,6 +22,7 @@ export async function getRequestCount (address){
         const campaignObject = campaign(address);
         res = await campaignObject.methods.getRequestsCount().call();
     }catch (error){
+        console.log(error)
         res = errorHandler(error)
     }
     return res
@@ -31,11 +33,13 @@ export async function getapproversCount (address){
         const campaignObject = campaign(address);
         res = await campaignObject.methods.approversCount().call();
     }catch (error){
-        res = errorHandler(error)
+        console.log(error)
+        res = errorHandler(2,error)
     }
     return res
 }
 export async function getAllRequests(params){
+    console.log(params)
     let res
     try {
         const campaignObject = campaign(params.address);
@@ -47,19 +51,22 @@ export async function getAllRequests(params){
                 })
         )
     }catch (error){
+        console.log(1,error)
         res = errorHandler(error)
     }
     return res
 }
 export async function createRequest(createRequestParam){
+    console.log(createRequestParam)
     let res
     try {
         const campaignObject = campaign(createRequestParam.address);
         const accounts = await web3.eth.getAccounts();
         res = await campaignObject.methods
-            .createRequest(createRequestParam.description, web3.utils.toWei(createRequestParam.value, "ether"), createRequestParam.recipient)
+            .createRequest(createRequestParam.description, web3.utils.toWei(createRequestParam.value.toString(), "ether"), createRequestParam.recipient)
             .send({ from: accounts[0] });
     } catch (err) {
+        console.log(err)
         res = errorHandler(err)
     }
     return res
@@ -86,6 +93,7 @@ export async function finalizeRequest(finalizeRequestParam){
             .finalizeRequest(finalizeRequestParam.id)
             .send({ from: accounts[0] });
     } catch (err) {
+        console.log(err)
         res = errorHandler(err)
     }
     return res
@@ -97,9 +105,10 @@ export async function contributeMoney(param){
         const accounts = await web3.eth.getAccounts();
         res = await campaignObject.methods.contribute().send({
             from: accounts[0],
-            value: web3.utils.toWei(param.value, "ether"),
+            value: web3.utils.toWei(param.amount.toString(), "ether"),
         });
     } catch (err) {
+        console.log(err)
         res = errorHandler(err)
     }
     return res

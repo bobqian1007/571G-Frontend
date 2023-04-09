@@ -28,7 +28,7 @@ export default {
                     {
                         type:'save',
                         payload:{
-                            campaignList:res
+                            campaigns:res
                         }
                     }
                 )

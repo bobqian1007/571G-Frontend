@@ -13,19 +13,22 @@ import {useParams} from "react-router-dom";
 const RequestList = ({requestList,loading,dispatch}) => {
     const {campaignAddress,requestCount,approversCount,campaignRequests} = requestList
     const [showForm,setShowForm] = useState(false)
+    const [buttonLoading,setButtonLoading] = useState(false)
     const params  = useParams();
+    console.log(params)
     const formField = [
         {
             name: 'address',
             label: 'Address',
             required: true,
+            initialValue:campaignAddress,
             component: <Input defaultValue={campaignAddress} /> ,
         },
         {
             name: 'value',
             label: 'Amount',
             required: true,
-            component: <InputNumber min={1} defaultValue={3} /> ,
+            component: <InputNumber min={0} /> ,
         },
         {
             name: 'description',
@@ -49,28 +52,34 @@ const RequestList = ({requestList,loading,dispatch}) => {
         })
     }
     const onApprove = async (id) =>{
+        setButtonLoading(true)
         const res = await approveRequest({id:id,address:campaignAddress})
         if (checkIfResValid(res)){
             notification.success({
                 message:"approve request successfully"
             })
+            await totalSearch()
         }else{
             notification.error({
                 message:"sorry,you are not allowed to approve this request"
             })
         }
+        setButtonLoading(false)
     }
     const onFinalize = async (id) =>{
+        setButtonLoading(true)
         const res = await finalizeRequest({id:id,address:campaignAddress})
         if (checkIfResValid(res)){
             notification.success({
                 message:"finalize request successfully"
             })
+            await totalSearch()
         }else{
             notification.error({
                 message:"sorry,you are not allowed to finalize this request,please contact manager"
             })
         }
+        setButtonLoading(false)
     }
     useEffect(() => {
         if (params.address != null && params.address !== ":address"){
@@ -103,8 +112,10 @@ const RequestList = ({requestList,loading,dispatch}) => {
         id:index,
         description:item.description,
         amount:web3.utils.fromWei(item.value, "ether"),
-        recipient:request.recipient,
-        approvalCount: item.approvalCount + "/" + approversCount
+        recipient:item.recipient,
+        approvalCountRatio: item.approvalCount + "/" + approversCount,
+        approvalCount:item.approvalCount,
+        complete:item.complete
     }))
     const columns = [
         {
@@ -129,21 +140,23 @@ const RequestList = ({requestList,loading,dispatch}) => {
         },
         {
             title: 'Approval Count',
-            dataIndex: 'approvalCount',
-            key: 'approvalCount',
+            dataIndex: 'approvalCountRatio',
+            key: 'approvalCountRatio',
         },
         {
             title: 'Operation',
             dataIndex: 'operation',
             render: (_, record) => {
+                console.log(record)
                 const readyToFinalize = record.approvalCount > approversCount / 2;
+                const fullApproval = record.approvalCount === approversCount
                 return (
                     <>
-                        <Button onClick={() => onApprove(record.id)} disabled={record.complete}>
+                        <Button loading={buttonLoading} onClick={() => onApprove(record.id)} disabled={fullApproval || record.complete}>
                             Approve
                         </Button>
                         <Divider type={"vertical"}/>
-                        <Button onClick={() => onFinalize(record.id)} disabled={!readyToFinalize || record.complete}>
+                        <Button loading={buttonLoading} onClick={() => onFinalize(record.id)} disabled={!readyToFinalize || record.complete}>
                             Finalize
                         </Button>
                     </>
@@ -153,14 +166,14 @@ const RequestList = ({requestList,loading,dispatch}) => {
     ];
     return (
         <PageContainer title='List of Requests' breadcrumb={null} >
-            <FormForModal title="Create New Request" left={6} right={18} width={500} record={{}} onFinish={createNewRequest} fields={formField}
-                          onCancel={() => setShowForm(false)} open={showForm}
+            <FormForModal title="Create New Request" left={6} right={18} width={500} onFinish={createNewRequest} fields={formField}
+                          onCancel={() => setShowForm(false)} open={showForm} loading={loading.effects['requestList/createNewRequest']}
             />
             <Card>
                 <SearchForm/>
                 <Row style={{marginTop: 12}}>
                     <Col span={12}>
-                        <Button type="primary" color={"black"} onClick={() => setShowForm(true)}><PlusOutlined/>Add New Campaign</Button>
+                        <Button type="primary" color={"black"} onClick={() => setShowForm(true)}><PlusOutlined/>Add New Request</Button>
                     </Col>
                 </Row>
                 <Divider/>
