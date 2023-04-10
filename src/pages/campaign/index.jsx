@@ -50,8 +50,8 @@ const CampaignList = ({campaignList,loading,dispatch}) => {
             </Modal>
             <Card loading={loading.effects['compaignList/queryCampaignList']}>
                 <Row>
-                    <Col span={18} />
-                    <Col span={6}>
+                    <Col span={20} />
+                    <Col span={4}>
                         <Button type="primary" color={"black"} onClick={() => setShowForm(true)}><PlusOutlined/>Add New Campaign</Button>
                     </Col>
                 </Row>

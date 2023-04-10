@@ -1,7 +1,7 @@
 import {connect} from "umi";
 import {PageContainer} from "@ant-design/pro-layout";
 import SearchForm from "./searchForm";
-import {Button, Card, Col, Divider, Input, InputNumber, notification, Row, Table, Typography} from "antd";
+import {Button, Card, Col, Divider, Input, InputNumber, notification, Row, Table, Tag, Typography} from "antd";
 import {PlusOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
 import {approveRequest, finalizeRequest} from "../../service/campaign";
@@ -138,10 +138,23 @@ const RequestList = ({requestList,loading,dispatch}) => {
             dataIndex: 'recipient',
             key: 'recipient',
         },
+        // {
+        //     title: 'Approval Count',
+        //     dataIndex: 'approvalCountRatio',
+        //     key: 'approvalCountRatio',
+        // },
         {
-            title: 'Approval Count',
-            dataIndex: 'approvalCountRatio',
-            key: 'approvalCountRatio',
+            title: 'Status',
+            dataIndex: 'complete',
+            render: (_, record) => {
+                if (record.complete){
+                    return <Tag color={"green"}>Completed</Tag>
+                }else if (record.approvalCount > approversCount / 2){
+                    return <Tag color={"blue"}>Wait for Finalize</Tag>
+                }else{
+                    return <Tag color={"volcano"}>Wait for approve</Tag>
+                }
+            }
         },
         {
             title: 'Operation',
